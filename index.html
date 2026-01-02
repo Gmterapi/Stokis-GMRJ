@@ -181,6 +181,8 @@
         .btn-danger:hover { background: #fee2e2; border-color: #fca5a5; }
         .btn-success { background: #ecfdf5; color: var(--color-success); border: 1px solid #a7f3d0; }
         .btn-success:hover { background: #d1fae5; border-color: #6ee7b7; }
+        .btn-wa { background: #25D366; color: white; }
+        .btn-wa:hover { background: #128C7E; }
         .btn-small { padding: 6px 10px; font-size: 12px; border-radius: 6px; }
 
         .modal {
@@ -253,15 +255,6 @@
 
         /* PERBAIKAN TABEL LAPORAN AGAR LURUS & TEPAT */
         #report-table { table-layout: fixed; width: 100%; }
-        /* 
-           Total lebar harus 100% agar lurus sempurna.
-           1. Produk (35%)
-           2. Poin Patokan (10%)
-           3. Jml Beli (13.75%)
-           4. Tot. Poin Beli (13.75%)
-           5. Jml Jual (13.75%)
-           6. Tot. Poin Jual (13.75%)
-        */
         #report-table th:nth-child(1) { width: 35%; text-align: left; } 
         #report-table th:nth-child(2) { width: 10%; text-align: center; }
         #report-table th:nth-child(3) { width: 13.75%; text-align: right; }
@@ -273,75 +266,58 @@
         #report-table tfoot td { text-align: right; }
         #report-table tfoot td:first-child { text-align: left; }
 
-        /* Network Tree */
+        /* Network Tree CSS (Dibiarkan agar tidak error) */
         .member-node-card {
             background: white; border: 1px solid var(--color-border); border-radius: var(--radius);
             padding: var(--spacing-12) var(--spacing-16); display: inline-block; min-width: 220px; 
             box-shadow: var(--shadow-sm); transition: all 0.3s; text-align: left; position: relative; z-index: 2;
             white-space: normal;
+            cursor: pointer;
         }
+        .member-node-card:hover { background-color: #f0fdf4; border-color: var(--color-primary); }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Print - PERBAIKAN LOGIKA PEMISAHAN HALAMAN */
-        @media print {
-            /* Sembunyikan UI & Sidebar */
-            .sidebar, .header, .mobile-menu-btn, .nav-menu, .settings, 
-            .report-header, .modal, .form-group, .page-toolbar, .btn { display: none !important; }
-            
-            /* Reset Body Layout */
-            body, .container, .main-content {
-                height: auto !important; overflow: visible !important;
-                display: block !important; padding: 0 !important; margin: 0 !important;
-                position: static !important; background: white !important; color: black !important;
-            }
-
-            /* Default: Sembunyikan Semua Tab */
-            .tab-content { display: none !important; }
-
-            /* 1. LOGIKA CETAK TRANSAKSI (Hanya Transaksi) */
-            body.printing-transactions #transactions { display: block !important; } 
-            body.printing-transactions .card { border: none !important; box-shadow: none !important; padding: 0 !important; }
-            body.printing-transactions #transactions-table { font-size: 10pt; width: 100%; border-collapse: collapse; }
-            body.printing-transactions #transactions-table th, body.printing-transactions #transactions-table td { border: 1px solid #000; padding: 4px; color: black; background: white !important; }
-
-            /* 2. LOGIKA CETAK POIN MEMBER (Hanya Points) */
-            body.printing-points #points { display: block !important; }
-            body.printing-points .card { border: none !important; box-shadow: none !important; padding: 0 !important; }
-            body.printing-points #points-table { font-size: 10pt; width: 100%; border-collapse: collapse; }
-            body.printing-points #points-table th, body.printing-points #points-table td { border: 1px solid #000; padding: 4px; color: black; background: white !important; }
-
-            /* 3. LOGIKA CETAK LAPORAN (Reports) */
-            #reports { display: block !important; } 
-            .report-accordion { border: none !important; box-shadow: none !important; margin-bottom: 0 !important; }
-            .report-body { display: none !important; border: none !important; padding: 0 !important; }
-            .report-accordion.active .report-body { display: block !important; }
-            #report-table { font-size: 10pt; width: 100%; border-collapse: collapse; }
-            #report-table th, #report-table td { border: 1px solid #000; padding: 4px; color: black; }
+        /* Network Tree CSS (Dibiarkan agar tidak error meskipun tidak dipakai) */
+        .member-node-card {
+            background: white; border: 1px solid var(--color-border); border-radius: var(--radius);
+            padding: var(--spacing-12) var(--spacing-16); display: inline-block; min-width: 220px; 
+            box-shadow: var(--shadow-sm); transition: all 0.3s; text-align: left; position: relative; z-index: 2;
+            white-space: normal;
+            cursor: pointer;
         }
+        .member-node-card:hover { background-color: #f0fdf4; border-color: var(--color-primary); }
 
-        /* Network Tree CSS */
-        .tree-container { display: flex; justify-content: center; padding: var(--spacing-24); overflow-x: auto; min-height: 200px; }
-        .tree ul { padding-top: 20px; position: relative; transition: all 0.5s; list-style-type: none; padding-left: 20px; display: flex; justify-content: center; }
-        .tree li { float: left; text-align: center; list-style-type: none; position: relative; padding: 20px 5px 0 5px; transition: all 0.5s; }
-        .tree li::before, .tree li::after { content: ''; position: absolute; top: 0; right: 50%; border-top: 1px solid var(--color-primary); width: 50%; height: 20px; }
-        .tree li::after { right: auto; left: 50%; border-left: 1px solid var(--color-primary); }
-        .tree li:first-child::before, .tree li:last-child::after { border: 0 none; }
-        .tree li:last-child::before{ border-right: 1px solid var(--color-primary); border-radius: 0 5px 0 0; }
-        .tree li:first-child::after{ border-radius: 5px 0 0 0; }
-        .tree ul ul::before{ content: ''; position: absolute; top: 0; left: 50%; border-left: 1px solid var(--color-primary); width: 0; height: 20px; }
+        /* Profile & Calculator */
+        .profile-preview {
+            width: 120px; height: 120px;
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: var(--radius);
+            margin-bottom: var(--spacing-16);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+        }
+        .profile-preview img { max-width: 100%; max-height: 100%; object-fit: cover; }
+        .profile-preview:hover { border-color: var(--color-primary); }
+        .profile-preview-label { position: absolute; bottom: 0; width: 100%; text-align: center; background: rgba(0,0,0,0.5); color: white; font-size: 10px; padding: 2px 0; }
+
+        /* Calculator */
+        .calculator-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 300px; margin: 0 auto; }
+        .calc-display { background: #1f2937; color: white; font-family: 'Courier New', monospace; font-size: 24px; text-align: right; padding: 15px; border-radius: 8px; margin-bottom: 15px; min-height: 60px; word-break: break-all; }
+        .calc-btn { padding: 15px; font-size: 18px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; transition: background 0.2s; text-align: center; }
+        .calc-btn:hover { background: #e5e7eb; }
+        .calc-btn.op { background: #d1fae5; color: #065f46; }
+        .calc-btn.op:hover { background: #a7f3d0; }
+        .calc-btn.equal { background: var(--color-primary); color: white; }
+        .calc-btn.equal:hover { background: var(--color-primary-dark); }
+        .calc-btn.clear { background: var(--color-error); color: white; }
+        .calc-btn.clear:hover { background: #b91c1c; }
         
-        .node-header { display: flex; align-items: center; gap: var(--spacing-8); margin-bottom: var(--spacing-4); }
-        .node-id { font-size: 10px; font-weight: 700; color: var(--color-secondary); background: #f0f0f0; padding: 2px 6px; border-radius: 4px; }
-        .node-name { font-weight: 600; color: var(--color-text); font-size: 14px; }
-        .node-stats { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-light); border-top: 1px solid #f3f4f6; padding-top: 8px; }
-        .node-stat span { display: block; }
-        .node-stat .val { font-weight: 600; color: var(--color-primary); }
-        .btn-expand { background: #e0f2fe; color: #0369a1; border: none; padding: 4px 8px; border-radius: 12px; font-size: 11px; cursor: pointer; margin-top: var(--spacing-8); width: 100%; display: none; text-align: center; font-weight: 600; }
-        .btn-expand:hover { background: #bae6fd; }
-
         /* Login */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
@@ -355,6 +331,64 @@
         .login-card h2 { margin-bottom: var(--spacing-24); color: var(--color-primary-dark); font-size: 24px; }
         .login-card input { margin-bottom: var(--spacing-16); padding: 12px; }
         .login-btn { width: 100%; padding: 14px; font-size: 16px; letter-spacing: 0.5px; }
+
+        /* Print */
+        @media print {
+            .no-print, .sidebar, .header, .mobile-menu-btn, .nav-menu, .modal, .form-group, .btn, .profile-preview-label { display: none !important; }
+            
+            body, .container, .main-content {
+                height: auto !important; overflow: visible !important;
+                display: block !important; padding: 0 !important; margin: 0 !important;
+                position: static !important; background: white !important; color: black !important;
+            }
+
+            /* Default hide all tab content */
+            .tab-content { display: none !important; }
+
+            /* Print Header */
+            .print-header {
+                display: block !important;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+                text-align: center;
+            }
+            .print-header img { max-height: 60px; margin-bottom: 10px; display: block; margin: 0 auto; }
+            .print-header h2 { margin: 0; font-size: 20px; text-transform: uppercase; }
+            .print-header p { margin: 2px 0; font-size: 12px; }
+
+            /* LOGIKA CETAK HALAMAN TERPISAH */
+            body.printing-transactions #transactions { display: block !important; }
+            body.printing-points #points { display: block !important; }
+            #reports { display: block !important; } 
+
+            /* LOGIKA CETAK LAPORAN (SEPARAT) */
+            body.printing-report-overview #reports { display: block !important; }
+            body.printing-report-overview #overview .report-body { display: block !important; }
+            body.printing-report-overview #ranking .report-body { display: none !important; }
+
+            body.printing-report-ranking #reports { display: block !important; }
+            body.printing-report-ranking #overview .report-body { display: none !important; }
+            body.printing-report-ranking #ranking .report-body { display: block !important; }
+
+            /* Styling Tables when printed */
+            body.printing-transactions .card, body.printing-points .card, 
+            body.printing-report-overview .card, body.printing-report-ranking .card { border: none !important; box-shadow: none !important; padding: 0 !important; }
+            
+            body.printing-transactions #transactions-table, 
+            body.printing-points #points-table, 
+            body.printing-report-overview #report-table, 
+            body.printing-report-ranking #report-table,
+            body.printing-report-ranking #ranking-table { font-size: 10pt; width: 100%; border-collapse: collapse; }
+            
+            body.printing-transactions #transactions-table th, body.printing-transactions #transactions-table td,
+            body.printing-points #points-table th, body.printing-points #points-table td,
+            body.printing-report-overview #report-table th, body.printing-report-overview #report-table td,
+            body.printing-report-ranking #report-table th, body.printing-report-ranking #report-table td,
+            body.printing-report-ranking #ranking-table th, body.printing-report-ranking #ranking-table td { 
+                border: 1px solid #000; padding: 4px; color: black; background: white !important; 
+            }
+        }
 
         /* Mobile */
         @media (max-width: 768px) {
@@ -371,11 +405,6 @@
             .btn { width: 100%; justify-content: center; }
             .stats-grid { grid-template-columns: 1fr; gap: var(--spacing-12); }
             .stat-value { font-size: 20px; }
-            .tree li { float: none; padding-left: 0; padding-right: 0; padding-bottom: 30px; display: block; }
-            .tree li::before, .tree li::after { display: none; } 
-            .tree ul ul::before { display: none; }
-            .member-node-card { width: 100%; display: flex; align-items: center; justify-content: space-between; }
-            .tree ul { padding-left: 20px; display: block; }
         }
     </style>
 </head>
@@ -409,19 +438,23 @@
                 <button class="close-sidebar-btn" onclick="toggleSidebar()">&times;</button>
             </div>
             <ul class="nav-menu">
+                <!-- Icon diganti person, dipindah paling atas -->
+                <li><button class="nav-btn" data-tab="profile" onclick="closeSidebarMobile()">👤 Profil</button></li>
                 <li><button class="nav-btn active" data-tab="dashboard" onclick="closeSidebarMobile()">📊 Dashboard</button></li>
                 <li><button class="nav-btn" data-tab="products" onclick="closeSidebarMobile()">📦 Produk</button></li>
                 <li><button class="nav-btn" data-tab="members" onclick="closeSidebarMobile()">👥 Member</button></li>
                 <li><button class="nav-btn" data-tab="transactions" onclick="closeSidebarMobile()">📈 Transaksi</button></li>
                 <li><button class="nav-btn" data-tab="points" onclick="closeSidebarMobile()">📊 Poin Member</button></li>
                 <li><button class="nav-btn" data-tab="reports" onclick="closeSidebarMobile()">📋 Laporan</button></li>
+                <!-- HALAMAN POHON JARINGAN DIHAPUS -->
+                <li><button class="nav-btn" data-tab="calculator" onclick="closeSidebarMobile()">🧮 Kalkulator</button></li>
                 <li><button class="nav-btn" data-tab="settings" onclick="closeSidebarMobile()">⚙️ Pengaturan</button></li>
             </ul>
         </div>
 
         <!-- Main Content -->
         <div class="main-content">
-            <div class="header">
+            <div class="header no-print">
                 <div class="header-top">
                     <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
                     <div>
@@ -533,12 +566,12 @@
                         </div>
                     </div>
                     
-                    <!-- TOOLBAR CETAK & EKSPOR (TERPISAH) -->
                     <div class="page-toolbar no-print" style="margin-bottom: 0; padding-bottom: var(--spacing-24); border-bottom: 1px dashed var(--color-border);">
                         <span style="font-size: 14px; font-weight: 600; color: var(--color-text);">Opsi Laporan:</span>
                         <div class="toolbar-actions">
                             <button class="btn btn-secondary" onclick="printPage('transactions')">🖨️ Cetak PDF</button>
                             <button class="btn btn-success" onclick="exportTransactionsToExcel()">📊 Export Excel</button>
+                            <button class="btn btn-wa" onclick="shareToWhatsApp('transactions-table', 'Laporan Transaksi')">📱 Kirim WA</button>
                         </div>
                     </div>
 
@@ -569,12 +602,12 @@
                         Halaman ini menghitung distribusi poin affiliate secara otomatis dari data transaksi.
                     </p>
 
-                    <!-- TOOLBAR CETAK & EKSPOR (TERPISAH) -->
                     <div class="page-toolbar no-print" style="margin-bottom: 0; padding-bottom: var(--spacing-24); border-bottom: 1px dashed var(--color-border);">
                         <span style="font-size: 14px; font-weight: 600; color: var(--color-text);">Opsi Laporan:</span>
                         <div class="toolbar-actions">
                             <button class="btn btn-secondary" onclick="printPage('points')">🖨️ Cetak PDF</button>
                             <button class="btn btn-success" onclick="exportPointsToExcel()">📊 Export Excel</button>
+                            <button class="btn btn-wa" onclick="shareToWhatsApp('points-table', 'Laporan Poin')">📱 Kirim WA</button>
                         </div>
                     </div>
 
@@ -605,7 +638,10 @@
                 <div class="report-accordion active" id="acc-overview">
                     <div class="report-header" onclick="toggleReportSection('overview')">
                         <h3>📊 Ringkasan (Beli vs Jual)</h3>
-                        <button class="btn btn-secondary no-print" onclick="event.stopPropagation(); printReport()">🖨️ Cetak Laporan</button>
+                        <div class="toolbar-actions">
+                            <button class="btn btn-secondary no-print" onclick="event.stopPropagation(); printReport()">🖨️ Cetak Laporan</button>
+                            <button class="btn btn-wa no-print" onclick="event.stopPropagation(); shareToWhatsApp('report-table', 'Ringkasan Laporan')">📱 Kirim WA</button>
+                        </div>
                     </div>
                     <div id="overview" class="report-body">
                         <div class="table-wrapper">
@@ -638,7 +674,10 @@
                 <div class="report-accordion" id="acc-ranking">
                     <div class="report-header" onclick="toggleReportSection('ranking')">
                         <h3>🏆 Ranking Poin</h3>
-                        <button class="btn btn-secondary no-print" onclick="event.stopPropagation(); printReport()">🖨️ Cetak Laporan</button>
+                        <div class="toolbar-actions">
+                            <button class="btn btn-secondary no-print" onclick="event.stopPropagation(); printReport()">🖨️ Cetak Laporan</button>
+                            <button class="btn btn-wa no-print" onclick="event.stopPropagation(); shareToWhatsApp('ranking-table', 'Ranking Poin')">📱 Kirim WA</button>
+                        </div>
                     </div>
                     <div id="ranking" class="report-body">
                         <div class="table-wrapper">
@@ -658,7 +697,72 @@
                     </div>
                 </div>
             </div>
-            
+
+            <!-- HALAMAN PROFIL (Paling Atas Dashboard) -->
+            <div id="profile" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h3>👤 Profil</h3>
+                    <!-- PERBAIKAN: Input Photo/Logo dihapus -->
+                    <form onsubmit="saveProfile(event)">
+                        <input type="hidden" id="profileEditMode" value="false">
+                        <div class="form-group">
+                            <label>Nama Koordinat</label>
+                            <input type="text" id="profileNamaKoordinat" placeholder="Contoh: Koordinat Bandung">
+                        </div>
+                        <div class="form-group">
+                            <label>Nama Stokis</label>
+                            <input type="text" id="profileNamaStokis" placeholder="Contoh: Stokis GMRJ">
+                        </div>
+                        
+                        <!-- FIELD YANG DIHAPUS (Nama Koordinat Kedua yang ada di bawah Nama Stokis) -->
+                        
+                        <div class="form-group">
+                            <label>No. Whatsapp (Format: 628...)</label>
+                            <input type="text" id="profileWaNumber" placeholder="Contoh: 62812345678">
+                        </div>
+                        <div class="form-group">
+                            <label>Alamat Stokis</label>
+                            <textarea id="profileAlamat" rows="3" placeholder="Alamat lengkap..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">💾 Simpan Profil</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Kalkulator -->
+            <div id="calculator" class="tab-content" style="display: none;">
+                <div class="card">
+                    <h3 style="text-align: center;">🧮 Kalkulator</h3>
+                    
+                    <div class="calculator-wrapper" style="max-width: 350px; margin: 0 auto;">
+                        <div class="calc-display" id="calcDisplay">0</div>
+                        <div class="calculator-grid">
+                            <button class="calc-btn clear" onclick="calcClear()">AC</button>
+                            <button class="calc-btn" onclick="calcInput('(')">(</button>
+                            <button class="calc-btn" onclick="calcInput(')')">)</button>
+                            <button class="calc-btn op" onclick="calcInput('/')">÷</button>
+                            <button class="calc-btn" onclick="calcInput('7')">7</button>
+                            <button class="calc-btn" onclick="calcInput('8')">8</button>
+                            <button class="calc-btn" onclick="calcInput('9')">9</button>
+                            <button class="calc-btn op" onclick="calcInput('*')">×</button>
+                            <button class="calc-btn" onclick="calcInput('4')">4</button>
+                            <button class="calc-btn" onclick="calcInput('5')">5</button>
+                            <button class="calc-btn" onclick="calcInput('6')">6</button>
+                            <button class="calc-btn op" onclick="calcInput('-')">-</button>
+                            <button class="calc-btn" onclick="calcInput('1')">1</button>
+                            <button class="calc-btn" onclick="calcInput('2')">2</button>
+                            <button class="calc-btn" onclick="calcInput('3')">3</button>
+                            <button class="calc-btn op" onclick="calcInput('+')">+</button>
+                            <button class="calc-btn" onclick="calcInput('0')">0</button>
+                            <button class="calc-btn" onclick="calcInput('.')">.</button>
+                            <button class="calc-btn equal" onclick="calcCalculate()">=</button>
+                            <button class="calc-btn clear" onclick="calcDelete()"><span style="font-size:16px;">🔙</span></button>
+                        </div>
+                    </div>
+                    <!-- LOGOUT DI HAPUS DARI SINI -->
+                </div>
+            </div>
+
             <!-- Pengaturan -->
             <div id="settings" class="tab-content" style="display: none;">
                 <div class="card">
@@ -694,6 +798,11 @@
                             <p style="font-size: 13px; color: var(--color-text-light); margin-bottom: var(--spacing-8);">Hapus semua data dan kembali ke data contoh.</p>
                             <button class="btn btn-danger" onclick="resetData()">🗑️ Reset Semua Data</button>
                         </div>
+                        <hr style="border: 0; border-top: 1px solid #d1fae5;">
+                        <!-- LOGOUT DITAMBAHKAN DI SINI (BAWAH PENGATURAN) -->
+                        <div style="text-align: center; margin-top: 20px; background: white; padding: 10px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                            <button class="btn btn-danger" onclick="doLogout()">🚪 Logout</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -715,7 +824,8 @@
                 
                 <div class="form-group">
                     <label>Poin Patokan (Per Satuan)</label>
-                    <input type="number" id="productPoint" step="0.01" readonly style="background: #f3f4f6; color: #6b7280;">
+                    <!-- PERBAIKAN: Readonly dihapus di HTML agar bisa diedit saat tambah -->
+                    <input type="number" id="productPoint" step="0.01">
                 </div>
 
                 <div class="form-group">
@@ -825,7 +935,15 @@
             products: [],
             members: [],
             transactions: [],
-            STORAGE_KEY: 'stokis_system_data_v24_print_final',
+            profile: {
+                namaKoordinat: '',
+                photoProfil: null, // Base64
+                namaStokis: '',
+                // namaKoordinatKedua: '', -> DIHAPUS
+                waNumber: '',
+                alamatStokis: ''
+            },
+            STORAGE_KEY: 'stokis_system_data_v34_network_removed_final',
             
             init() {
                 this.loadData();
@@ -836,6 +954,7 @@
                     dashboard.classList.add('active');
                     dashboard.style.display = 'block';
                 }
+                this.loadProfileUI();
             },
 
             loadData() {
@@ -855,6 +974,7 @@
                             this.products = data.products || [];
                             this.members = data.members || [];
                             this.transactions = data.transactions || [];
+                            if(data.profile) this.profile = data.profile;
                         } else {
                             this.loadSampleData();
                         }
@@ -871,7 +991,8 @@
                 const data = {
                     products: this.products,
                     members: this.members,
-                    transactions: this.transactions
+                    transactions: this.transactions,
+                    profile: this.profile
                 };
                 localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
             },
@@ -962,6 +1083,7 @@
                         } else if (tabName === 'reports') {
                             toggleReportSection('overview');
                         }
+                        // POHON JARINGAN DIHAPUS
                     });
                 });
             },
@@ -976,6 +1098,16 @@
                 if (pointsTab && pointsTab.style.display === 'block') {
                     this.renderPoints();
                 }
+            },
+
+            loadProfileUI() {
+                document.getElementById('profileNamaKoordinat').value = this.profile.namaKoordinat;
+                document.getElementById('profileNamaStokis').value = this.profile.namaStokis;
+                // DIHAPUS: document.getElementById('profileNamaKoordinatKedua')
+                document.getElementById('profileWaNumber').value = this.profile.waNumber;
+                document.getElementById('profileAlamat').value = this.profile.alamatStokis;
+                
+                // PERBAIKAN: Tidak ada lagi UI preview foto karena elemen HTML dihapus
             },
 
             renderDashboard() {
@@ -1147,6 +1279,7 @@
                     tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: #999;">Belum ada poin</td></tr>';
                 }
             },
+            // POHON JARINGAN DIHAPUS
 
             getMemberHierarchy(memberId) {
                 const hierarchy = [memberId];
@@ -1205,6 +1338,13 @@
         function openAddProductModal() {
             document.getElementById('productModalTitle').innerText = 'Tambah Produk';
             document.querySelector('#productModal form').reset();
+            
+            // PERBAIKAN: Pastikan input poin dapat diedit
+            const pointInput = document.getElementById('productPoint');
+            pointInput.removeAttribute('readonly');
+            pointInput.style.background = 'white';
+            pointInput.style.color = 'var(--color-text)';
+
             document.getElementById('productModal').classList.add('active');
         }
 
@@ -1215,8 +1355,14 @@
             document.getElementById('productModalTitle').innerText = 'Edit Produk';
             
             document.getElementById('productName').value = product.name;
-            document.getElementById('productPoint').value = product.point;
             document.getElementById('productPembelian').value = product.pembelian;
+
+            // PERBAIKAN: Saat edit, input poin jadi readonly
+            const pointInput = document.getElementById('productPoint');
+            pointInput.value = product.point;
+            pointInput.setAttribute('readonly', 'true');
+            pointInput.style.background = '#f3f4f6';
+            pointInput.style.color = '#6b7280';
 
             document.getElementById('productModal').classList.add('active');
         }
@@ -1426,22 +1572,60 @@
             }
         }
 
-        // === LOGIKA UPLINE SUPPORT ===
-        function getMemberHierarchy(memberId) {
-            const hierarchy = [memberId];
-            let current = memberId;
-            
-            while (current) {
-                const member = app.members.find(m => m.id === current);
-                if (member && member.upline) {
-                    hierarchy.push(member.upline);
-                    current = member.upline;
-                } else {
-                    break;
-                }
+        // === LOGIKA PROFIL ===
+        function handleProfileUpload(input) {
+            // PERBAIKAN: Logika upload tetap ada tapi tidak dipanggil karena input dihapus
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.size > 2000000) { alert('Ukuran file terlalu besar! Maksimal 2MB.'); return; }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    app.profile.photoProfil = e.target.result;
+                    app.saveData();
+                    app.loadProfileUI();
+                };
+                reader.readAsDataURL(file);
             }
-            
-            return hierarchy;
+        }
+
+        function saveProfile(e) {
+            e.preventDefault();
+            app.profile.namaKoordinat = document.getElementById('profileNamaKoordinat').value.trim();
+            app.profile.namaStokis = document.getElementById('profileNamaStokis').value.trim();
+            app.profile.waNumber = document.getElementById('profileWaNumber').value.trim();
+            app.profile.alamatStokis = document.getElementById('profileAlamat').value.trim();
+            app.saveData();
+            alert('Profil berhasil disimpan!');
+        }
+
+        // === LOGIKA CALCULATOR ===
+        let calcExpression = '';
+        function calcInput(val) {
+            calcExpression += val;
+            document.getElementById('calcDisplay').textContent = calcExpression;
+        }
+        function calcClear() {
+            calcExpression = '';
+            document.getElementById('calcDisplay').textContent = '0';
+        }
+        function calcDelete() {
+            calcExpression = calcExpression.slice(0, -1);
+            document.getElementById('calcDisplay').textContent = calcExpression || '0';
+        }
+        function calcCalculate() {
+            try {
+                const result = Function('"use strict";return (' + calcExpression + ')')();
+                document.getElementById('calcDisplay').textContent = result;
+                calcExpression = String(result);
+            } catch (e) {
+                alert('Format salah!');
+            }
+        }
+        function doLogout() {
+            if(confirm('Yakin ingin keluar aplikasi?')) {
+                window.location.reload();
+            }
         }
 
         // === LOGIKA LAPORAN ===
@@ -1459,13 +1643,13 @@
             else if(id === 'ranking') renderRankingTable();
         }
 
-        // === PERBAIKAN CETAK PEMISAHAN HALAMAN (TERPISAH) ===
+        // === FITUR CETAK PEMISAHAN HALAMAN ===
         function printPage(pageId) {
-            // Bersihkan kelas cetak sebelumnya agar tidak bentrok
             document.body.classList.remove('printing-transactions');
             document.body.classList.remove('printing-points');
+            
+            updatePrintHeader();
 
-            // Tambahkan kelas sesuai halaman yang diprint
             if (pageId === 'transactions') {
                 document.body.classList.add('printing-transactions');
             } else if (pageId === 'points') {
@@ -1474,7 +1658,6 @@
 
             window.print();
 
-            // Hapus kelas setelah dialog print selesai (perkiraan aman)
             setTimeout(() => {
                 document.body.classList.remove('printing-transactions');
                 document.body.classList.remove('printing-points');
@@ -1482,14 +1665,64 @@
         }
 
         function printReport() {
-            // Fungsi print untuk bagian Reports (sudah ada)
             document.body.classList.remove('printing-transactions');
             document.body.classList.remove('printing-points');
+            document.body.classList.remove('printing-report-overview');
+            document.body.classList.remove('printing-report-ranking');
+            
+            updatePrintHeader();
+
+            const overviewBody = document.getElementById('overview');
+            const rankingBody = document.getElementById('ranking');
+            
+            if(overviewBody.classList.contains('active')) {
+                document.body.classList.add('printing-report-overview');
+            } else if (rankingBody.classList.contains('active')) {
+                document.body.classList.add('printing-report-ranking');
+            }
+
             window.print();
+            
             setTimeout(() => {
                 document.body.classList.remove('printing-transactions');
                 document.body.classList.remove('printing-points');
+                document.body.classList.remove('printing-report-overview');
+                document.body.classList.remove('printing-report-ranking');
             }, 1000);
+        }
+
+        function updatePrintHeader() {
+            const body = document.body;
+            
+            let headerEl = document.getElementById('dynamic-print-header');
+            if(!headerEl) {
+                headerEl = document.createElement('div');
+                headerEl.id = 'dynamic-print-header';
+                headerEl.className = 'print-header';
+                headerEl.innerHTML = `
+                    <div class="print-header">
+                        <img id="print-logo-img" src="" style="display:none; max-width: 60px; margin: 0 auto 10px;">
+                        <h2 id="print-title">Data Transaksi Stokis</h2>
+                        <p id="print-info" style="margin: 0; line-height: 1.4; font-size: 12px;"></p>
+                    </div>
+                `;
+                body.appendChild(headerEl); 
+            }
+
+            const logoImg = headerEl.querySelector('#print-logo-img');
+            const infoP = headerEl.querySelector('#print-info');
+
+            if(app.profile.photoProfil) {
+                logoImg.src = app.profile.photoProfil;
+                logoImg.style.display = 'block';
+            } else {
+                logoImg.style.display = 'none';
+            }
+
+            const infoText = [];
+            if(app.profile.namaKoordinat) infoText.push(`Nama Koordinat: ${app.profile.namaKoordinat}`);
+            if(app.profile.namaStokis) infoText.push(`Nama Stokis: ${app.profile.namaStokis}`);
+            infoP.innerHTML = infoText.join('<br>');
         }
 
         function exportData() {
@@ -1497,6 +1730,7 @@
                 products: app.products,
                 members: app.members,
                 transactions: app.transactions,
+                profile: app.profile,
                 exportedAt: new Date().toISOString()
             }, null, 2);
             
@@ -1525,12 +1759,14 @@
                     }
 
                     if(confirm('Data akan ditimpa. Lanjutkan?')) {
-                        app.products = data.products;
-                        app.members = data.members;
-                        app.transactions = data.transactions;
+                        app.products = data.products || [];
+                        app.members = data.members || [];
+                        app.transactions = data.transactions || [];
+                        if(data.profile) app.profile = data.profile;
                         
                         app.saveData();
                         app.render();
+                        app.loadProfileUI();
                         alert('Data berhasil dipulihkan!');
                         fileInput.value = ''; 
                     }
@@ -1615,10 +1851,11 @@
                 const totalProductPoints = parseFloat(product.point) * t.qty;
 
                 if (memberPoints[t.memberId] !== undefined) {
-                    memberPoints[t.memberId] += totalProductPoints * 0.7; // Level 0
+                    memberPoints[t.memberId] += totalProductPoints * 0.7; 
                 }
 
-                const hierarchy = getMemberHierarchy(t.memberId);
+                const hierarchy = app.getMemberHierarchy(t.memberId);
+                
                 hierarchy.forEach((mId, levelIdx) => {
                     if (levelIdx > 0 && levelIdx < levels && memberPoints[mId] !== undefined) {
                         let factor = 0;
@@ -1666,6 +1903,60 @@
             });
         }
 
+        // === FITUR WHATSAPP TAMBAHAN ===
+        function shareToWhatsApp(tableId, title) {
+            const table = document.getElementById(tableId);
+            if(!table) return;
+            
+            let message = `*${title}*\n\n`;
+            
+            const profile = app.profile;
+            if(profile.namaStokis || profile.namaKoordinat) {
+                message += `*Data Stokis*\n`;
+                if(profile.namaStokis) message += `Stokis: ${profile.namaStokis}\n`;
+                if(profile.namaKoordinat) message += `Nama: ${profile.namaKoordinat}\n`;
+                if(profile.alamatStokis) message += `Alamat: ${profile.alamatStokis}\n`;
+                message += '\n';
+            }
+
+            const rows = table.querySelectorAll('tbody tr');
+            if(rows.length === 0) {
+                alert('Tidak ada data untuk dikirim!');
+                return;
+            }
+
+            const tfoot = table.querySelector('tfoot tr');
+            if(tfoot) {
+                 message += `\n*Total*\n`;
+                 const cells = tfoot.querySelectorAll('td');
+                 cells.forEach((cell, idx) => {
+                     if(idx > 0) { 
+                         const text = cell.innerText.replace(/,/g, '');
+                         message += `${text}\n`;
+                     }
+                 });
+            }
+
+            message += `\nDetail Data:\n`;
+
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = Array.from(cells).map(td => td.innerText);
+                message += rowData.join(' | ') + '\n';
+            });
+
+            const encodedMessage = encodeURIComponent(message);
+            
+            const waNumber = profile.waNumber;
+            if(!waNumber || waNumber.length < 10) {
+                alert('Nomor WhatsApp belum disetting di Profil (Menu Profil).\nFormat wajib: 628...');
+                return;
+            }
+
+            const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+            window.open(url, '_blank');
+        }
+
         // === UTILS ===
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -1692,17 +1983,16 @@
             }
         }
 
-        // PERBAIKAN EKSPOR MEMBER (ID, NAMA, UPLINE, KOORDINAT SAJA)
         function exportMembersToCSV() {
             if (app.members.length === 0) { alert('Tidak ada data member.'); return; }
             
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; // BOM untuk Excel
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+            
             csvContent += "ID,Nama,Upline,Koordinat\n";
 
             app.members.forEach(m => {
                 const uplineName = app.members.find(u => u.id === m.upline)?.name || '';
                 
-                // Urutan sesuai permintaan: ID, Nama, Upline, Koordinat
                 const row = [
                     m.id,
                     m.name,
@@ -1721,23 +2011,22 @@
             document.body.removeChild(link);
         }
 
-        // PERBAIKAN EKSPOR TRANSAKSI (FORMAT TEMPLATE SEDERHANA)
         function exportTransactionsToCSV() {
             if (app.transactions.length === 0) { alert('Tidak ada data transaksi.'); return; }
             let csvContent = "data:text/csv;charset=utf-8,";
             
-            // Header: No, Tanggal, Member, Produk, Jumlah
             csvContent += "No,Tanggal,Member,Produk,Jumlah\n";
 
             app.transactions.forEach((t, index) => {
                 const m = app.members.find(mem => mem.id === t.memberId);
                 const p = app.products.find(prod => prod.code === t.productCode);
+                
                 const row = [
-                    index +1,                           // No
-                    t.date || "",                       // Tanggal
-                    m ? m.name : "Unknown",             // Member
-                    p ? p.name : "Unknown",             // Produk
-                    t.qty                               // Jumlah
+                    index +1,
+                    t.date || "",
+                    m ? m.name : "Unknown",
+                    p ? p.name : "Unknown",
+                    t.qty
                 ];
                 csvContent += row.map(item => `"${item}"`).join(",") + "\n";
             });
@@ -1751,7 +2040,6 @@
             document.body.removeChild(link);
         }
 
-        // === FUNGSI EXPORT EXCEL TAMBAHAN ===
         function exportTransactionsToExcel() {
             if (app.transactions.length === 0) { alert('Tidak ada data transaksi.'); return; }
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
@@ -1788,7 +2076,6 @@
             app.members.forEach(member => {
                 const points = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
                 
-                // Hitung ulang poin agar sinkron
                 app.transactions.forEach(t => {
                     const product = app.products.find(p => p.code === t.productCode);
                     if (!product) return;
