@@ -595,7 +595,9 @@
                         <table id="transactions-table">
                             <thead>
                                 <tr>
+                                    <!-- PERBAIKAN: Tambah Kolom Kode Transaksi -->
                                     <th>No</th>
+                                    <th>Kode Transaksi</th>
                                     <th>Tanggal</th>
                                     <th>Member</th>
                                     <th>Produk</th>
@@ -718,20 +720,22 @@
             <div id="profile" class="tab-content" style="display: none;">
                 <div class="card">
                     <h3>👤 Profil</h3>
-                    <!-- Input Photo/Logo dihapus di versi sebelumnya -->
+                    <!-- PERBAIKAN: Input Photo/Logo dihapus di versi sebelumnya -->
+                    <!-- PERBAIKAN: Tambah Input Kode Koordinat (Max 5 Huruf) -->
                     <form onsubmit="saveProfile(event)">
-                        <input type="hidden" id="profileEditMode" value="false">
                         <div class="form-group">
                             <label>Nama Koordinat</label>
                             <input type="text" id="profileNamaKoordinat" placeholder="Contoh: Koordinat Bandung">
                         </div>
                         <div class="form-group">
+                            <label>Kode Koordinat (Untuk Kode Transaksi)</label>
+                            <input type="text" id="profileKodeKoordinat" placeholder="Contoh: IB (5 Huruf)" maxlength="5" style="text-transform: uppercase;">
+                        </div>
+                        <div class="form-group">
                             <label>Nama Stokis</label>
                             <input type="text" id="profileNamaStokis" placeholder="Contoh: Stokis GMRJ">
                         </div>
-                        
                         <!-- FIELD YANG DIHAPUS (Nama Koordinat Kedua yang ada di bawah Nama Stokis) -->
-                        
                         <div class="form-group">
                             <label>No. Whatsapp (Format: 628...)</label>
                             <input type="text" id="profileWaNumber" placeholder="Contoh: 62812345678">
@@ -784,8 +788,7 @@
                 <div class="card">
                     <h3>⚙️ Pengaturan & Data</h3>
                     <div class="backup-section" style="display: grid; gap: var(--spacing-16); padding: var(--spacing-20); background: #f0fdf4; border-radius: var(--radius); border: 1px dashed var(--color-primary);">
-                        
-                        <!-- PERBAIKAN: Tambah Tombol Simpan Pesan Otomatis -->
+                        <!-- PERBAIKAN: Input Format Pesan Otomatis -->
                         <div>
                             <h4>📋 Format Pesan Otomatis WA</h4>
                             <p style="font-size: 13px; color: var(--color-text-light); margin-bottom: var(--spacing-8);">Template pesan saat kirim WA ke member. Gunakan <code>[Nama]</code> untuk nama member.</p>
@@ -955,6 +958,7 @@
             transactions: [],
             profile: {
                 namaKoordinat: '',
+                kodeKoordinat: '', // PERBAIKAN: Tambah field kode koordinat
                 photoProfil: null, // Base64
                 namaStokis: '',
                 // namaKoordinatKedua: '', -> DIHAPUS
@@ -962,7 +966,7 @@
                 alamatStokis: '',
                 waAutoMsg: '' // PERBAIKAN: Tambahkan field pesan otomatis
             },
-            STORAGE_KEY: 'stokis_system_data_v37_header_text_fix',
+            STORAGE_KEY: 'stokis_system_data_v39_code_5_chars',
             
             init() {
                 this.loadData();
@@ -1121,10 +1125,10 @@
 
             loadProfileUI() {
                 document.getElementById('profileNamaKoordinat').value = this.profile.namaKoordinat;
+                document.getElementById('profileKodeKoordinat').value = this.profile.kodeKoordinat || ''; // PERBAIKAN: Load Kode
                 document.getElementById('profileNamaStokis').value = this.profile.namaStokis;
                 document.getElementById('profileWaNumber').value = this.profile.waNumber;
                 document.getElementById('profileAlamat').value = this.profile.alamatStokis;
-                // PERBAIKAN: Load waAutoMsg
                 document.getElementById('profileWaAutoMsg').value = this.profile.waAutoMsg || "Halo [Nama], stok produk sudah tersedia di stokis GMRJ. Silakan ambil segera ya.";
             },
 
@@ -1227,6 +1231,7 @@
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${idx + 1}</td>
+                        <td><strong>${t.code || '-'}</strong></td>
                         <td>${t.date || '-'}</td>
                         <td>${member?.name || 'Unknown'}</td>
                         <td>${product?.name || 'Unknown'}</td>
@@ -1567,8 +1572,15 @@
 
             const totalPoints = parseFloat(product.point) * qty;
 
+            // PERBAIKAN: Logic Generate Kode Transaksi (Prefix 5 Huruf)
+            const prefix = (app.profile.kodeKoordinat || 'TR').substring(0, 5).toUpperCase();
+            const prefixCount = app.transactions.filter(t => t.code && t.code.startsWith(prefix)).length;
+            const nextNum = prefixCount + 1;
+            const paddedNum = nextNum.toString().padStart(4, '0');
+            const transactionCode = prefix + paddedNum;
+
             app.transactions.push({
-                memberId, productCode, qty, totalPoints, date: dateFormatted
+                memberId, productCode, qty, totalPoints, date: dateFormatted, code: transactionCode // PERBAIKAN
             });
 
             product.pembelian -= qty;
@@ -1620,6 +1632,8 @@
         function saveProfile(e) {
             e.preventDefault();
             app.profile.namaKoordinat = document.getElementById('profileNamaKoordinat').value.trim();
+            // PERBAIKAN: Simpan Kode Koordinat (Max 5 Huruf)
+            app.profile.kodeKoordinat = document.getElementById('profileKodeKoordinat').value.toUpperCase().substring(0,5);
             app.profile.namaStokis = document.getElementById('profileNamaStokis').value.trim();
             app.profile.waNumber = document.getElementById('profileWaNumber').value.trim();
             app.profile.alamatStokis = document.getElementById('profileAlamat').value.trim();
@@ -1815,15 +1829,6 @@
             reader.readAsText(file);
         }
 
-        // === PERBAIKAN: SIMPAN PESAN OTOMATIS ===
-        function saveWaAutoMsg() {
-            const msg = document.getElementById('profileWaAutoMsg').value;
-            app.profile.waAutoMsg = msg;
-            app.saveData();
-            alert('Format pesan otomatis berhasil disimpan!');
-        }
-        // ========================================
-
         function renderOverviewReport() {
             const tbody = document.querySelector('#report-table tbody');
             tbody.innerHTML = '';
@@ -1901,7 +1906,6 @@
                     memberPoints[t.memberId] += totalProductPoints * 0.7; 
                 }
 
-                // FIX: Menggunakan app.getMemberHierarchy
                 const hierarchy = app.getMemberHierarchy(t.memberId);
                 
                 hierarchy.forEach((mId, levelIdx) => {
@@ -2056,22 +2060,23 @@
 
         // === PERBAIKAN: MODIFIKASI EXPORT TRANSAKSI ===
         function exportTransactionsToExcel() {
-            // PERBAIKAN: Format transaksi excel yang baru (Tanpa Total Poin)
+            // PERBAIKAN: Format transaksi excel yang baru (Tanpa Total Poin, Geser No Sebelum Kode)
             if (app.transactions.length === 0) { alert('Tidak ada data transaksi.'); return; }
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
             
-            // Header sesuai permintaan
-            csvContent += "No,Tanggal,Member,Produk,Jumlah\n";
+            // Header sesuai permintaan: No, Kode Transaksi sebelum Tanggal
+            csvContent += "No,Kode Transaksi,Tanggal,Member,Produk,Jumlah\n";
 
             app.transactions.forEach((t, index) => {
                 const m = app.members.find(mem => mem.id === t.memberId);
                 const p = app.products.find(prod => prod.code === t.productCode);
                 
                 const row = [
-                    index +1,
-                    t.date, // Pastikan t.date ada, gunakan t.date || ""
-                    m ? `"${m.name}"` : "Unknown",
-                    p ? `"${p.name}"` : "Unknown",
+                    index +1,           // No
+                    `"${t.code || '-'}"`, // Kode Transaksi
+                    `"${t.date}"`,
+                    `"${m ? m.name : "Unknown"}"`,
+                    `"${p ? p.name : "Unknown"}"`,
                     t.qty
                 ];
                 csvContent += row.join(",") + "\n";
@@ -2090,9 +2095,8 @@
         function exportMembersToExcel() {
             // PERBAIKAN: Tetapkan format output excel yang lama, tidak mengubahnya.
             if (app.members.length === 0) { alert('Tidak ada data member.'); return; }
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
             
-            // Header sesuai permintaan
             csvContent += "ID,Nama,Upline,Koordinat\n";
 
             app.members.forEach(m => {
