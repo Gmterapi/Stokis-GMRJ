@@ -266,7 +266,7 @@
         #report-table tfoot td { text-align: right; }
         #report-table tfoot td:first-child { text-align: left; }
 
-        /* Network Tree CSS (Dibiarkan agar tidak error) */
+        /* Network Tree CSS (Dibiarkan) */
         .member-node-card {
             background: white; border: 1px solid var(--color-border); border-radius: var(--radius);
             padding: var(--spacing-12) var(--spacing-16); display: inline-block; min-width: 220px; 
@@ -280,7 +280,7 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Network Tree CSS (Dibiarkan agar tidak error meskipun tidak dipakai) */
+        /* Network Tree CSS (Dibiarkan agar tidak error) */
         .member-node-card {
             background: white; border: 1px solid var(--color-border); border-radius: var(--radius);
             padding: var(--spacing-12) var(--spacing-16); display: inline-block; min-width: 220px; 
@@ -360,6 +360,7 @@
             /* LOGIKA CETAK HALAMAN TERPISAH */
             body.printing-transactions #transactions { display: block !important; }
             body.printing-points #points { display: block !important; }
+            body.printing-members #members { display: block !important; }
             #reports { display: block !important; } 
 
             /* LOGIKA CETAK LAPORAN (SEPARAT) */
@@ -372,17 +373,19 @@
             body.printing-report-ranking #ranking .report-body { display: block !important; }
 
             /* Styling Tables when printed */
-            body.printing-transactions .card, body.printing-points .card, 
+            body.printing-transactions .card, body.printing-points .card, body.printing-members .card,
             body.printing-report-overview .card, body.printing-report-ranking .card { border: none !important; box-shadow: none !important; padding: 0 !important; }
             
             body.printing-transactions #transactions-table, 
-            body.printing-points #points-table, 
+            body.printing-points #points-table,
+            body.printing-members #members-table,
             body.printing-report-overview #report-table, 
             body.printing-report-ranking #report-table,
             body.printing-report-ranking #ranking-table { font-size: 10pt; width: 100%; border-collapse: collapse; }
             
             body.printing-transactions #transactions-table th, body.printing-transactions #transactions-table td,
             body.printing-points #points-table th, body.printing-points #points-table td,
+            body.printing-members #members-table th, body.printing-members #members-table td,
             body.printing-report-overview #report-table th, body.printing-report-overview #report-table td,
             body.printing-report-ranking #report-table th, body.printing-report-ranking #report-table td,
             body.printing-report-ranking #ranking-table th, body.printing-report-ranking #ranking-table td { 
@@ -537,6 +540,17 @@
                         <h3 style="margin: 0;">Daftar Member</h3>
                         <button class="btn btn-primary" onclick="openAddMemberModal()">+ Tambah Member</button>
                     </div>
+                    
+                    <!-- PERBAIKAN: Tambahkan Toolbar Cetak/Export/WA pada Halaman Member -->
+                    <div class="page-toolbar no-print" style="margin-bottom: 0; padding-bottom: var(--spacing-24); border-bottom: 1px dashed var(--color-border);">
+                        <span style="font-size: 14px; font-weight: 600; color: var(--color-text);">Opsi Laporan:</span>
+                        <div class="toolbar-actions">
+                            <button class="btn btn-secondary" onclick="printMembers()">🖨️ Cetak PDF</button>
+                            <button class="btn btn-success" onclick="exportMembersToExcel()">📊 Export Excel</button>
+                            <button class="btn btn-wa" onclick="shareToWhatsApp('members-table', 'Laporan Member')">📱 Kirim WA (Global)</button>
+                        </div>
+                    </div>
+
                     <div class="table-wrapper">
                         <table id="members-table">
                             <thead>
@@ -547,6 +561,8 @@
                                     <th>Koordinat</th>
                                     <th class="text-right">Total Poin</th>
                                     <th>Status</th>
+                                    <!-- PERBAIKAN: Teks Kolom Diubah -->
+                                    <th>No Whatsapp</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -702,7 +718,7 @@
             <div id="profile" class="tab-content" style="display: none;">
                 <div class="card">
                     <h3>👤 Profil</h3>
-                    <!-- PERBAIKAN: Input Photo/Logo dihapus -->
+                    <!-- Input Photo/Logo dihapus di versi sebelumnya -->
                     <form onsubmit="saveProfile(event)">
                         <input type="hidden" id="profileEditMode" value="false">
                         <div class="form-group">
@@ -768,16 +784,13 @@
                 <div class="card">
                     <h3>⚙️ Pengaturan & Data</h3>
                     <div class="backup-section" style="display: grid; gap: var(--spacing-16); padding: var(--spacing-20); background: #f0fdf4; border-radius: var(--radius); border: 1px dashed var(--color-primary);">
+                        
+                        <!-- PERBAIKAN: Tambah Tombol Simpan Pesan Otomatis -->
                         <div>
-                            <h4>📤 Export Data Member (CSV)</h4>
-                            <p style="font-size: 13px; color: var(--color-text-light); margin-bottom: var(--spacing-8);">Download data member ke file CSV.</p>
-                            <button class="btn btn-success" onclick="exportMembersToCSV()">📥 Export Data Member</button>
-                        </div>
-                        <hr style="border: 0; border-top: 1px solid #d1fae5;">
-                        <div>
-                            <h4>📊 Export Data Transaksi (CSV)</h4>
-                            <p style="font-size: 13px; color: var(--color-text-light); margin-bottom: var(--spacing-8);">Download semua data transaksi ke file CSV.</p>
-                            <button class="btn btn-secondary" onclick="exportTransactionsToCSV()">📥 Export Transaksi</button>
+                            <h4>📋 Format Pesan Otomatis WA</h4>
+                            <p style="font-size: 13px; color: var(--color-text-light); margin-bottom: var(--spacing-8);">Template pesan saat kirim WA ke member. Gunakan <code>[Nama]</code> untuk nama member.</p>
+                            <textarea id="profileWaAutoMsg" rows="3" placeholder="Contoh: Halo [Nama], stok produk sudah tersedia. Silakan ambil ya."></textarea>
+                            <button class="btn btn-primary" style="margin-top: 10px; width: 100%;" onclick="saveWaAutoMsg()">💾 Simpan Pesan</button>
                         </div>
                         <hr style="border: 0; border-top: 1px solid #d1fae5;">
                         <div>
@@ -871,6 +884,11 @@
                         <input type="text" id="memberKoordinat" placeholder="Contoh: -6.2088, 106.8456">
                     </div>
                 </div>
+                <!-- PERBAIKAN: Input WA Member Ditambahkan -->
+                <div class="form-group">
+                    <label>No. Whatsapp (Format: 628...)</label>
+                    <input type="text" id="memberWaNumber" placeholder="Contoh: 62812345678">
+                </div>
                 <div class="form-group">
                     <label>Status</label>
                     <select id="memberStatus">
@@ -941,9 +959,10 @@
                 namaStokis: '',
                 // namaKoordinatKedua: '', -> DIHAPUS
                 waNumber: '',
-                alamatStokis: ''
+                alamatStokis: '',
+                waAutoMsg: '' // PERBAIKAN: Tambahkan field pesan otomatis
             },
-            STORAGE_KEY: 'stokis_system_data_v34_network_removed_final',
+            STORAGE_KEY: 'stokis_system_data_v37_header_text_fix',
             
             init() {
                 this.loadData();
@@ -1050,10 +1069,10 @@
                 });
 
                 this.members = [
-                    { id: 'M001', name: 'Adi Kusumah', upline: null, koordinat: '', status: 'aktif', totalPoints: 0 },
-                    { id: 'M002', name: 'Budi Santoso', upline: 'M001', koordinat: 'Bandung', status: 'aktif', totalPoints: 0 },
-                    { id: 'M003', name: 'Citra Dewi', upline: 'M001', koordinat: 'Surabaya', status: 'aktif', totalPoints: 0 },
-                    { id: 'M004', name: 'Doni Hartono', upline: 'M002', koordinat: 'Medan', status: 'tidak aktif', totalPoints: 0 }
+                    { id: 'M001', name: 'Adi Kusumah', upline: null, koordinat: '', waNumber: '', status: 'aktif', totalPoints: 0 },
+                    { id: 'M002', name: 'Budi Santoso', upline: 'M001', koordinat: 'Bandung', waNumber: '628123456', status: 'aktif', totalPoints: 0 },
+                    { id: 'M003', name: 'Citra Dewi', upline: 'M001', koordinat: 'Surabaya', waNumber: '', status: 'aktif', totalPoints: 0 },
+                    { id: 'M004', name: 'Doni Hartono', upline: 'M002', koordinat: 'Medan', waNumber: '', status: 'tidak aktif', totalPoints: 0 }
                 ];
 
                 this.transactions = [];
@@ -1103,11 +1122,10 @@
             loadProfileUI() {
                 document.getElementById('profileNamaKoordinat').value = this.profile.namaKoordinat;
                 document.getElementById('profileNamaStokis').value = this.profile.namaStokis;
-                // DIHAPUS: document.getElementById('profileNamaKoordinatKedua')
                 document.getElementById('profileWaNumber').value = this.profile.waNumber;
                 document.getElementById('profileAlamat').value = this.profile.alamatStokis;
-                
-                // PERBAIKAN: Tidak ada lagi UI preview foto karena elemen HTML dihapus
+                // PERBAIKAN: Load waAutoMsg
+                document.getElementById('profileWaAutoMsg').value = this.profile.waAutoMsg || "Halo [Nama], stok produk sudah tersedia di stokis GMRJ. Silakan ambil segera ya.";
             },
 
             renderDashboard() {
@@ -1176,6 +1194,12 @@
                     const statusClass = m.status === 'aktif' ? 'badge-success' : 'badge-inactive';
                     const statusText = m.status === 'aktif' ? 'Aktif' : 'Tidak Aktif';
                     
+                    // PERBAIKAN: Logika Tombol WA Individu
+                    let waHtml = '-';
+                    if (m.waNumber && m.waNumber.length > 8) {
+                        waHtml = `<button class="btn btn-small btn-wa" onclick="sendWAtoMember('${m.id}')">📱</button>`;
+                    }
+
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td><strong>${m.id}</strong></td>
@@ -1184,6 +1208,7 @@
                         <td><span class="badge badge-blue">${m.koordinat || '-'}</span></td>
                         <td class="text-right font-mono" style="color: var(--color-primary); font-weight: 600;">${m.totalPoints.toFixed(2)}</td>
                         <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td style="text-align: center;">${waHtml}</td>
                         <td>
                             <button class="btn btn-small btn-secondary" onclick="openEditMemberModal('${m.id}')">✏️</button>
                             <button class="btn btn-small btn-secondary" style="color: var(--color-error); border: 1px solid #fecaca;" onclick="app.deleteMember('${m.id}')">🗑️</button>
@@ -1444,6 +1469,8 @@
             document.getElementById('memberName').value = member.name;
             document.getElementById('memberUpline').value = member.upline || '';
             document.getElementById('memberKoordinat').value = member.koordinat || '';
+            // PERBAIKAN: Load field WA
+            document.getElementById('memberWaNumber').value = member.waNumber || '';
             document.getElementById('memberStatus').value = member.status || 'aktif';
 
             document.getElementById('memberModal').classList.add('active');
@@ -1457,6 +1484,7 @@
             const name = document.getElementById('memberName').value.trim();
             const upline = document.getElementById('memberUpline').value || null;
             const koordinat = document.getElementById('memberKoordinat').value.trim();
+            const waNumber = document.getElementById('memberWaNumber').value.trim(); // PERBAIKAN
             const status = document.getElementById('memberStatus').value;
 
             if (!newId) { alert('ID Member tidak boleh kosong!'); return; }
@@ -1475,7 +1503,7 @@
                 }
 
                 member.id = newId; member.name = name; member.upline = upline;
-                member.koordinat = koordinat; member.status = status;
+                member.koordinat = koordinat; member.waNumber = waNumber; member.status = status; // PERBAIKAN
             } else {
                 if (app.members.find(m => m.id === newId)) {
                     alert(`ID "${newId}" sudah terdaftar!`); return;
@@ -1483,7 +1511,7 @@
 
                 app.members.push({
                     id: newId, name: name, upline: upline,
-                    koordinat: koordinat, status: status, totalPoints: 0
+                    koordinat: koordinat, waNumber: waNumber, status: status, totalPoints: 0 // PERBAIKAN
                 });
             }
 
@@ -1647,6 +1675,7 @@
         function printPage(pageId) {
             document.body.classList.remove('printing-transactions');
             document.body.classList.remove('printing-points');
+            document.body.classList.remove('printing-members'); // Add this
             
             updatePrintHeader();
 
@@ -1654,6 +1683,8 @@
                 document.body.classList.add('printing-transactions');
             } else if (pageId === 'points') {
                 document.body.classList.add('printing-points');
+            } else if (pageId === 'members') {
+                document.body.classList.add('printing-members');
             }
 
             window.print();
@@ -1661,12 +1692,18 @@
             setTimeout(() => {
                 document.body.classList.remove('printing-transactions');
                 document.body.classList.remove('printing-points');
+                document.body.classList.remove('printing-members');
             }, 1000);
+        }
+        
+        function printMembers() {
+            printPage('members');
         }
 
         function printReport() {
             document.body.classList.remove('printing-transactions');
             document.body.classList.remove('printing-points');
+            document.body.classList.remove('printing-members');
             document.body.classList.remove('printing-report-overview');
             document.body.classList.remove('printing-report-ranking');
             
@@ -1686,6 +1723,7 @@
             setTimeout(() => {
                 document.body.classList.remove('printing-transactions');
                 document.body.classList.remove('printing-points');
+                document.body.classList.remove('printing-members');
                 document.body.classList.remove('printing-report-overview');
                 document.body.classList.remove('printing-report-ranking');
             }, 1000);
@@ -1777,6 +1815,15 @@
             reader.readAsText(file);
         }
 
+        // === PERBAIKAN: SIMPAN PESAN OTOMATIS ===
+        function saveWaAutoMsg() {
+            const msg = document.getElementById('profileWaAutoMsg').value;
+            app.profile.waAutoMsg = msg;
+            app.saveData();
+            alert('Format pesan otomatis berhasil disimpan!');
+        }
+        // ========================================
+
         function renderOverviewReport() {
             const tbody = document.querySelector('#report-table tbody');
             tbody.innerHTML = '';
@@ -1854,6 +1901,7 @@
                     memberPoints[t.memberId] += totalProductPoints * 0.7; 
                 }
 
+                // FIX: Menggunakan app.getMemberHierarchy
                 const hierarchy = app.getMemberHierarchy(t.memberId);
                 
                 hierarchy.forEach((mId, levelIdx) => {
@@ -1931,7 +1979,7 @@
                  const cells = tfoot.querySelectorAll('td');
                  cells.forEach((cell, idx) => {
                      if(idx > 0) { 
-                         const text = cell.innerText.replace(/,/g, '');
+                         const text = cell.innerText.replace(/,/g, ''); 
                          message += `${text}\n`;
                      }
                  });
@@ -1956,6 +2004,29 @@
             const url = `https://wa.me/${waNumber}?text=${encodedMessage}`;
             window.open(url, '_blank');
         }
+
+        // === PERBAIKAN: KIRIM WA KE MEMBER ===
+        function sendWAtoMember(memberId) {
+            const member = app.members.find(m => m.id === memberId);
+            if (!member) return;
+
+            if (!member.waNumber || member.waNumber.length < 10) {
+                alert(`Member ${member.name} belum memiliki nomor WhatsApp yang valid.\nSilakan edit data member dan isi nomornya.`);
+                return;
+            }
+
+            if (!app.profile.waAutoMsg) {
+                alert('Format pesan otomatis belum disetting di halaman Pengaturan.');
+                return;
+            }
+
+            let message = app.profile.waAutoMsg.replace(/\[Nama\]/g, member.name);
+            
+            const encodedMessage = encodeURIComponent(message);
+            const url = `https://wa.me/${member.waNumber}?text=${encodedMessage}`;
+            window.open(url, '_blank');
+        }
+        // =============================================
 
         // === UTILS ===
         function toggleSidebar() {
@@ -1983,38 +2054,13 @@
             }
         }
 
-        function exportMembersToCSV() {
-            if (app.members.length === 0) { alert('Tidak ada data member.'); return; }
-            
+        // === PERBAIKAN: MODIFIKASI EXPORT TRANSAKSI ===
+        function exportTransactionsToExcel() {
+            // PERBAIKAN: Format transaksi excel yang baru (Tanpa Total Poin)
+            if (app.transactions.length === 0) { alert('Tidak ada data transaksi.'); return; }
             let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
             
-            csvContent += "ID,Nama,Upline,Koordinat\n";
-
-            app.members.forEach(m => {
-                const uplineName = app.members.find(u => u.id === m.upline)?.name || '';
-                
-                const row = [
-                    m.id,
-                    m.name,
-                    uplineName,
-                    m.koordinat || ''
-                ];
-                csvContent += row.map(item => `"${item}"`).join(",") + "\n";
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "data_member_stokis.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        function exportTransactionsToCSV() {
-            if (app.transactions.length === 0) { alert('Tidak ada data transaksi.'); return; }
-            let csvContent = "data:text/csv;charset=utf-8,";
-            
+            // Header sesuai permintaan
             csvContent += "No,Tanggal,Member,Produk,Jumlah\n";
 
             app.transactions.forEach((t, index) => {
@@ -2023,12 +2069,12 @@
                 
                 const row = [
                     index +1,
-                    t.date || "",
-                    m ? m.name : "Unknown",
-                    p ? p.name : "Unknown",
+                    t.date, // Pastikan t.date ada, gunakan t.date || ""
+                    m ? `"${m.name}"` : "Unknown",
+                    p ? `"${p.name}"` : "Unknown",
                     t.qty
                 ];
-                csvContent += row.map(item => `"${item}"`).join(",") + "\n";
+                csvContent += row.join(",") + "\n";
             });
             
             const encodedUri = encodeURI(csvContent);
@@ -2040,29 +2086,31 @@
             document.body.removeChild(link);
         }
 
-        function exportTransactionsToExcel() {
-            if (app.transactions.length === 0) { alert('Tidak ada data transaksi.'); return; }
-            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
-            csvContent += "No,Tanggal,Member,Produk,Jml Jual,Total Poin\n";
-
-            app.transactions.forEach((t, index) => {
-                const m = app.members.find(mem => mem.id === t.memberId);
-                const p = app.products.find(prod => prod.code === t.productCode);
-                const row = [
-                    index +1,
-                    t.date,
-                    m ? m.name : "Unknown",
-                    p ? p.name : "Unknown",
-                    t.qty,
-                    t.totalPoints
-                ];
-                csvContent += row.map(item => `"${item}"`).join(",") + "\n";
-            });
+        // === PERBAIKAN: MODIFIKASI EXPORT MEMBER ===
+        function exportMembersToExcel() {
+            // PERBAIKAN: Tetapkan format output excel yang lama, tidak mengubahnya.
+            if (app.members.length === 0) { alert('Tidak ada data member.'); return; }
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
             
+            // Header sesuai permintaan
+            csvContent += "ID,Nama,Upline,Koordinat\n";
+
+            app.members.forEach(m => {
+                const uplineName = app.members.find(u => u.id === m.upline)?.name || '';
+                
+                const row = [
+                    `"${m.id}"`,
+                    `"${m.name}"`,
+                    `"${uplineName}"`,
+                    `"${m.koordinat || ''}"`
+                ];
+                csvContent += row.join(",") + "\n";
+            });
+
             const encodedUri = encodeURI(csvContent);
             const link = document.createElement("a");
             link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Laporan_Transaksi_Excel.csv");
+            link.setAttribute("download", "data_member_stokis.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
