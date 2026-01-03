@@ -720,7 +720,7 @@
             <div id="profile" class="tab-content" style="display: none;">
                 <div class="card">
                     <h3>👤 Profil</h3>
-                    <!-- PERBAIKAN: Input Photo/Logo dihapus di versi sebelumnya -->
+                    <!-- Input Photo/Logo dihapus di versi sebelumnya -->
                     <!-- PERBAIKAN: Tambah Input Kode Koordinat (Max 5 Huruf) -->
                     <form onsubmit="saveProfile(event)">
                         <div class="form-group">
@@ -788,11 +788,13 @@
                 <div class="card">
                     <h3>⚙️ Pengaturan & Data</h3>
                     <div class="backup-section" style="display: grid; gap: var(--spacing-16); padding: var(--spacing-20); background: #f0fdf4; border-radius: var(--radius); border: 1px dashed var(--color-primary);">
+                        
                         <!-- PERBAIKAN: Input Format Pesan Otomatis -->
                         <div>
                             <h4>📋 Format Pesan Otomatis WA</h4>
                             <p style="font-size: 13px; color: var(--color-text-light); margin-bottom: var(--spacing-8);">Template pesan saat kirim WA ke member. Gunakan <code>[Nama]</code> untuk nama member.</p>
                             <textarea id="profileWaAutoMsg" rows="3" placeholder="Contoh: Halo [Nama], stok produk sudah tersedia. Silakan ambil ya."></textarea>
+                            <!-- PERBAIKAN: Tombol Simpan Pesan -->
                             <button class="btn btn-primary" style="margin-top: 10px; width: 100%;" onclick="saveWaAutoMsg()">💾 Simpan Pesan</button>
                         </div>
                         <hr style="border: 0; border-top: 1px solid #d1fae5;">
@@ -966,7 +968,7 @@
                 alamatStokis: '',
                 waAutoMsg: '' // PERBAIKAN: Tambahkan field pesan otomatis
             },
-            STORAGE_KEY: 'stokis_system_data_v39_code_5_chars',
+            STORAGE_KEY: 'stokis_system_data_v40_fix_save_wa_settings',
             
             init() {
                 this.loadData();
@@ -997,7 +999,10 @@
                             this.products = data.products || [];
                             this.members = data.members || [];
                             this.transactions = data.transactions || [];
-                            if(data.profile) this.profile = data.profile;
+                            // PERBAIKAN LOGIKA MERGE PROFIL AGAR PROPERTY BARU TIDAK HILANG
+                            if(data.profile) {
+                                this.profile = { ...this.profile, ...data.profile };
+                            }
                         } else {
                             this.loadSampleData();
                         }
@@ -1573,7 +1578,7 @@
             const totalPoints = parseFloat(product.point) * qty;
 
             // PERBAIKAN: Logic Generate Kode Transaksi (Prefix 5 Huruf)
-            const prefix = (app.profile.kodeKoordinat || 'TR').substring(0, 5).toUpperCase();
+            const prefix = (app.profile.kodeKoordinat || 'TR').substring(0,5).toUpperCase();
             const prefixCount = app.transactions.filter(t => t.code && t.code.startsWith(prefix)).length;
             const nextNum = prefixCount + 1;
             const paddedNum = nextNum.toString().padStart(4, '0');
@@ -1606,7 +1611,7 @@
                     member.totalPoints -= transaction.totalPoints;
                 }
 
-                app.transactions.splice(idx, 1);
+                app.transactions.splice(idx,1);
                 app.saveData(); 
                 app.render();
             }
@@ -1814,7 +1819,10 @@
                         app.products = data.products || [];
                         app.members = data.members || [];
                         app.transactions = data.transactions || [];
-                        if(data.profile) app.profile = data.profile;
+                        // PERBAIKAN LOGIKA MERGE PROFIL
+                        if(data.profile) {
+                            app.profile = { ...app.profile, ...data.profile };
+                        }
                         
                         app.saveData();
                         app.render();
@@ -1828,6 +1836,15 @@
             };
             reader.readAsText(file);
         }
+
+        // === PERBAIKAN: FUNGSI SAVE PESAN OTOMATIS ===
+        function saveWaAutoMsg() {
+            const msg = document.getElementById('profileWaAutoMsg').value;
+            app.profile.waAutoMsg = msg;
+            app.saveData();
+            alert('Format pesan otomatis berhasil disimpan!');
+        }
+        // =============================================
 
         function renderOverviewReport() {
             const tbody = document.querySelector('#report-table tbody');
@@ -1906,6 +1923,7 @@
                     memberPoints[t.memberId] += totalProductPoints * 0.7; 
                 }
 
+                // FIX: Menggunakan app.getMemberHierarchy
                 const hierarchy = app.getMemberHierarchy(t.memberId);
                 
                 hierarchy.forEach((mId, levelIdx) => {
@@ -2019,8 +2037,9 @@
                 return;
             }
 
-            if (!app.profile.waAutoMsg) {
-                alert('Format pesan otomatis belum disetting di halaman Pengaturan.');
+            // PERBAIKAN: Cek apakah pesan kosong atau string kosong agar valid untuk WA
+            if (!app.profile.waAutoMsg || app.profile.waAutoMsg.trim() === '') {
+                alert('Format pesan otomatis belum disetting atau kosong di halaman Pengaturan.');
                 return;
             }
 
@@ -2071,6 +2090,7 @@
                 const m = app.members.find(mem => mem.id === t.memberId);
                 const p = app.products.find(prod => prod.code === t.productCode);
                 
+                // PERBAIKAN: Data Row: [No, Kode, Tanggal, Member, Produk, Jumlah]
                 const row = [
                     index +1,           // No
                     `"${t.code || '-'}"`, // Kode Transaksi
